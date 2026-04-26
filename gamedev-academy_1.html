@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GameDev Academy 🎮</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://js.puter.com/v2/"></script>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  :root{
+    --accent:#4fc3f7;--green:#69f0ae;--coral:#ff7043;--purple:#ce93d8;
+    --star:#FFD700;--bg:#0f1b2d;--panel:#1a2d45;--panel2:#162238;
+    --text:#e8f4fd;--muted:#7aa3c8;--code-bg:#0a1628;--r:14px;
+  }
+  html,body{height:100%;background:var(--bg);}
+  body{font-family:'Nunito',sans-serif;color:var(--text);display:flex;flex-direction:column;min-height:100vh;}
+
+  /* HEADER */
+  .hdr{background:#1a3a5c;padding:13px 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid rgba(79,195,247,0.2);flex-shrink:0;}
+  .logo{font-family:'Fredoka One',cursive;font-size:26px;color:var(--accent);letter-spacing:1px;}
+  .logo span{color:var(--green);}
+  .hdr-right{display:flex;align-items:center;gap:14px;}
+  .stars{font-size:16px;font-weight:700;color:var(--star);}
+  .vtog{background:rgba(206,147,216,0.15);border:1.5px solid var(--purple);color:var(--purple);border-radius:20px;padding:6px 14px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif;transition:opacity 0.2s;}
+  .vtog.muted{opacity:0.4;}
+
+  /* HOME */
+  #hs{flex:1;display:flex;flex-direction:column;}
+  .home-hero{text-align:center;padding:30px 20px 10px;}
+  .home-hero h1{font-family:'Fredoka One',cursive;font-size:32px;color:var(--accent);margin-bottom:8px;}
+  .home-hero p{color:var(--muted);font-size:15px;}
+  .mgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;padding:20px 24px;}
+  .mcard{background:var(--panel);border-radius:16px;padding:20px 14px;text-align:center;cursor:pointer;border:2px solid transparent;transition:transform 0.15s,border-color 0.15s,box-shadow 0.15s;position:relative;}
+  .mcard:hover{transform:translateY(-5px);border-color:var(--accent);box-shadow:0 8px 30px rgba(79,195,247,0.15);}
+  .mcard.done{border-color:var(--green);background:#1e3a28;}
+  .mcard.locked{opacity:0.38;cursor:not-allowed;}
+  .mcard.locked:hover{transform:none;border-color:transparent;box-shadow:none;}
+  .mcard-icon{font-size:44px;margin-bottom:10px;}
+  .mcard-title{font-size:14px;font-weight:700;margin-bottom:4px;}
+  .mcard-tag{font-size:11px;color:var(--muted);}
+  .mcard-stars{font-size:13px;color:var(--star);margin-top:5px;}
+  .mcard-age{font-size:10px;color:var(--muted);margin-top:3px;background:rgba(255,255,255,0.07);border-radius:20px;padding:2px 8px;display:inline-block;}
+  .dbadge{position:absolute;top:8px;right:8px;background:var(--green);color:#062010;font-size:10px;font-weight:700;border-radius:20px;padding:2px 8px;}
+
+  /* GAME SCREEN */
+  #gs{display:none;flex:1;flex-direction:column;}
+  .mbar{background:var(--panel2);padding:12px 22px;display:flex;align-items:center;gap:14px;border-bottom:1px solid rgba(255,255,255,0.07);}
+  .mbar-icon{font-size:30px;}
+  .mbar-info h2{font-family:'Fredoka One',cursive;font-size:19px;color:var(--accent);}
+  .mbar-info p{font-size:12px;color:var(--muted);}
+  .bbk{margin-left:auto;background:transparent;border:1.5px solid var(--muted);color:var(--muted);border-radius:20px;padding:6px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif;white-space:nowrap;}
+  .bbk:hover{border-color:var(--accent);color:var(--accent);}
+
+  .layout{display:flex;flex:1;overflow:hidden;}
+  .lcol{flex:1;display:flex;flex-direction:column;border-right:1px solid rgba(255,255,255,0.07);min-width:0;}
+  .rcol{width:340px;display:flex;flex-direction:column;flex-shrink:0;}
+
+  /* Code editor */
+  .pane-hdr{padding:9px 16px;background:#0d1e30;font-size:11px;color:var(--muted);font-weight:700;letter-spacing:1px;text-transform:uppercase;display:flex;align-items:center;gap:7px;flex-shrink:0;}
+  .dot{width:10px;height:10px;border-radius:50%;display:inline-block;flex-shrink:0;}
+  .dr{background:#ff5f57;}.dy{background:#febc2e;}.dg{background:#28c840;}
+  #ed{flex:1;background:var(--code-bg);color:#c8e6ff;font-family:'Courier New',monospace;font-size:14px;line-height:1.75;padding:16px;border:none;outline:none;resize:none;min-height:0;}
+  .btns{display:flex;gap:10px;padding:12px 16px;flex-shrink:0;background:var(--panel2);}
+  .brun{flex:1;background:var(--green);color:#062010;border:none;border-radius:30px;padding:12px 0;font-size:15px;font-weight:700;font-family:'Fredoka One',cursive;cursor:pointer;transition:transform 0.1s,box-shadow 0.1s;}
+  .brun:hover{transform:scale(1.02);box-shadow:0 4px 20px rgba(105,240,174,0.3);}
+  .brun:active{transform:scale(0.97);}
+  .bchk{background:var(--coral);color:#1a0500;border:none;border-radius:30px;padding:12px 20px;font-size:14px;font-weight:700;font-family:'Fredoka One',cursive;cursor:pointer;white-space:nowrap;}
+  .bchk:hover{opacity:0.88;}
+
+  /* Preview */
+  #pf{flex:1;background:white;border:none;min-height:160px;}
+
+  /* Chat */
+  .chdr{padding:10px 16px;background:#1a2540;font-size:11px;color:var(--purple);font-weight:700;letter-spacing:1px;text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,0.07);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+  .sdot{width:9px;height:9px;border-radius:50%;background:var(--green);display:none;flex-shrink:0;}
+  .sdot.on{display:inline-block;animation:pulse 0.6s infinite alternate;}
+  @keyframes pulse{from{opacity:1;}to{opacity:0.1;}}
+  #msgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;}
+  .bub{padding:10px 14px;border-radius:14px;font-size:13px;line-height:1.55;max-width:95%;word-break:break-word;}
+  .bub.cl{background:#1e2f4d;border-bottom-left-radius:3px;align-self:flex-start;}
+  .bub.us{background:var(--accent);color:#001926;font-weight:600;align-self:flex-end;border-bottom-right-radius:3px;}
+  .bub.tk{opacity:0.55;font-style:italic;color:var(--purple);align-self:flex-start;}
+  code{background:rgba(0,0,0,0.4);color:var(--accent);padding:1px 5px;border-radius:4px;font-family:'Courier New',monospace;font-size:12px;}
+
+  .cinput{display:flex;gap:8px;padding:10px 14px;border-top:1px solid rgba(255,255,255,0.07);background:#101f30;flex-shrink:0;align-items:center;}
+  #ci{flex:1;background:var(--code-bg);border:1.5px solid rgba(79,195,247,0.3);color:var(--text);border-radius:20px;padding:8px 14px;font-size:13px;font-family:'Nunito',sans-serif;outline:none;}
+  #ci:focus{border-color:var(--accent);}
+  #ci::placeholder{color:var(--muted);}
+  .bsend{background:var(--purple);color:#1a0c2a;border:none;border-radius:50%;width:36px;height:36px;font-size:16px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-weight:700;}
+  .bmic{border:1.5px solid var(--coral);background:transparent;color:var(--coral);border-radius:50%;width:36px;height:36px;font-size:16px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+  .bmic.rec{background:var(--coral);color:#fff;animation:pulse 0.6s infinite alternate;}
+  .hrow{text-align:center;padding:8px 14px;background:#101f30;border-top:1px solid rgba(255,255,255,0.04);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+  .bhint{background:transparent;border:none;color:var(--muted);font-size:12px;cursor:pointer;text-decoration:underline;font-family:'Nunito',sans-serif;}
+  .vstatus{font-size:10px;color:var(--muted);}
+
+  /* Celebration overlay */
+  #cel{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.82);align-items:center;justify-content:center;flex-direction:column;z-index:999;text-align:center;gap:16px;padding:20px;}
+  #cel.show{display:flex;}
+  .cel-stars{font-size:56px;animation:pop 0.5s ease-out;}
+  @keyframes pop{from{transform:scale(0);}to{transform:scale(1);}}
+  .cel-title{font-family:'Fredoka One',cursive;font-size:36px;color:var(--star);}
+  .cel-sub{font-size:17px;color:var(--text);max-width:400px;}
+  .bnxt{background:var(--star);color:#1a1000;border:none;border-radius:30px;padding:14px 36px;font-size:19px;font-weight:700;font-family:'Fredoka One',cursive;cursor:pointer;margin-top:8px;}
+  .bnxt:hover{opacity:0.9;}
+  .bstay{background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:13px;font-family:'Nunito',sans-serif;text-decoration:underline;}
+
+  /* Responsive */
+  @media(max-width:800px){
+    .layout{flex-direction:column;}
+    .rcol{width:100%;max-height:340px;}
+    #msgs{max-height:160px;}
+    .mgrid{grid-template-columns:repeat(auto-fit,minmax(140px,1fr));}
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="hdr">
+  <div class="logo">Game<span>Dev</span> Academy 🎮</div>
+  <div class="hdr-right">
+    <div class="stars">⭐ <span id="sc">0</span> Stars</div>
+    <button class="vtog" id="vtog" onclick="toggleVoice()">🔊 Voice ON</button>
+  </div>
+</div>
+
+<!-- HOME SCREEN -->
+<div id="hs">
+  <div class="home-hero">
+    <h1>Welcome, Game Developer! 🚀</h1>
+    <p>Choose a mission below and start building your very own video game!</p>
+  </div>
+  <div class="mgrid" id="mg"></div>
+</div>
+
+<!-- GAME SCREEN -->
+<div id="gs">
+  <div class="mbar">
+    <div class="mbar-icon" id="gemi">🎮</div>
+    <div class="mbar-info">
+      <h2 id="gtit">Mission</h2>
+      <p id="gdesc">Goal...</p>
+    </div>
+    <button class="bbk" onclick="goHome()">← Back to Missions</button>
+  </div>
+
+  <div class="layout">
+    <!-- Left: Editor + Preview -->
+    <div class="lcol">
+      <div class="pane-hdr">
+        <span class="dot dr"></span><span class="dot dy"></span><span class="dot dg"></span>
+        &nbsp;your code
+      </div>
+      <textarea id="ed" spellcheck="false"></textarea>
+      <div class="btns">
+        <button class="brun" onclick="runCode()">▶ Run My Game!</button>
+        <button class="bchk" onclick="checkCode()">✓ Check It!</button>
+      </div>
+      <div class="pane-hdr">🎮 &nbsp;game preview</div>
+      <iframe id="pf" sandbox="allow-scripts"></iframe>
+    </div>
+
+    <!-- Right: Cody Chat -->
+    <div class="rcol">
+      <div class="chdr">
+        <span>🤖 Cody — your coding buddy</span>
+        <span class="sdot" id="sdot"></span>
+      </div>
+      <div id="msgs"></div>
+      <div class="cinput">
+        <input id="ci" type="text" placeholder="Ask Cody anything..." onkeydown="if(event.key==='Enter')sendChat()" />
+        <button class="bmic" id="bmic" onclick="toggleMic()" title="Talk to Cody!">🎤</button>
+        <button class="bsend" onclick="sendChat()">↑</button>
+      </div>
+      <div class="hrow">
+        <button class="bhint" onclick="showHint()">💡 Hint please!</button>
+        <span class="vstatus" id="vstatus">Loading voice...</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CELEBRATION -->
+<div id="cel">
+  <div class="cel-stars">🎉🌟🎊</div>
+  <div class="cel-title">You did it!</div>
+  <div class="cel-sub" id="celmsg">Amazing work!</div>
+  <button class="bnxt" onclick="nextMission()">Next Mission →</button>
+  <button class="bstay" onclick="closeCel()">Keep playing this one</button>
+</div>
+
+<script>
+const MISSIONS = [
+  {
+    id: 0, emoji: "🌈", title: "Rainbow Screen", tag: "Colours & HTML", stars: 3, age: "8+",
+    starter: `<!DOCTYPE html>
+<html>
+<body style="background: red; text-align: center;">
+
+  <h1 style="color: white; font-size: 60px;">
+    Hello World! 🌍
+  </h1>
+
+  <p style="color: white; font-size: 24px;">
+    I made this with code!
+  </p>
+
+</body>
+</html>`,
+    goal: "Change the background colour and add colourful elements!",
+    intro: "Welcome, young game developer! I am Cody, your coding buddy! In this first mission, you will make a colourful webpage using HTML — that is the language websites are built with! Your mission is to change the background colour and add some colourful text. Try swapping the word red to blue, green, or purple, then hit Run to see what happens!",
+    hint: "Change the word red in the background style to your favourite colour! You can also change the font-size number bigger to make the text huge. Try a few different colours and see which one you like best!",
+    check: c => { const cols = ['blue','green','purple','orange','pink','yellow','teal','coral','gold','lime','cyan','magenta']; return cols.some(x => c.toLowerCase().includes(x)) && c.includes('background'); }
+  },
+  {
+    id: 1, emoji: "🖱️", title: "Clickable Button", tag: "JavaScript Basics", stars: 3, age: "8+",
+    starter: `<!DOCTYPE html>
+<html>
+<body style="background: #1a1a2e; text-align: center; padding: 40px;">
+
+  <h1 style="color: #eee; font-size: 40px;">
+    My First Button!
+  </h1>
+
+  <button
+    style="background: purple; color: white;
+           font-size: 24px; padding: 20px 40px;
+           border: none; border-radius: 15px;
+           cursor: pointer;"
+    onclick="buttonClicked()">
+    Click Me!
+  </button>
+
+  <p id="message"
+     style="color: yellow; font-size: 28px; margin-top: 30px;">
+  </p>
+
+  <script>
+    function buttonClicked() {
+      document.getElementById('message').innerText =
+        'You clicked it!';
+    }
+  <\/script>
+
+</body>
+</html>`,
+    goal: "Make the button show a fun message and change its colour!",
+    intro: "Great work getting here! Now you are going to learn JavaScript — the magic language that makes things happen on websites! See that function called buttonClicked? That code runs every single time someone clicks the button. Your mission is to change the message to something funny, and also try changing the button colour!",
+    hint: "Find the text that says You clicked it and change it to something hilarious! You can also change the word purple to any colour you like. Hit Run after each change to see it work!",
+    check: c => c.includes('function') && c.includes('innerText') && !c.includes("You clicked it!")
+  },
+  {
+    id: 2, emoji: "🎲", title: "Dice Roller", tag: "Random Numbers", stars: 3, age: "8+",
+    starter: `<!DOCTYPE html>
+<html>
+<body style="background: #2d1b69; text-align: center;
+             padding: 40px; font-family: Arial;">
+
+  <h1 style="color: white; font-size: 36px;">🎲 Dice Roller</h1>
+
+  <div id="result"
+       style="color: #ddd; font-size: 36px; margin: 30px;">
+    Press roll to play!
+  </div>
+
+  <button onclick="rollDice()"
+    style="background: #ff6b6b; color: white;
+           font-size: 22px; padding: 15px 40px;
+           border: none; border-radius: 15px; cursor: pointer;">
+    🎲 Roll the Dice!
+  </button>
+
+  <div id="counter"
+       style="color: #aaa; font-size: 18px; margin-top: 20px;">
+    Rolls: 0
+  </div>
+
+  <script>
+    let rollCount = 0;
+
+    function rollDice() {
+      let number = Math.floor(Math.random() * 6) + 1;
+      rollCount = rollCount + 1;
+      document.getElementById('counter').innerText =
+        'Rolls: ' + rollCount;
+
+      // TODO: show the number in a fun way!
+      document.getElementById('result').innerText =
+        'You rolled: ' + number;
+    }
+  <\/script>
+
+</body>
+</html>`,
+    goal: "Show a fun emoji for each dice number (1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣) instead of just the number!",
+    intro: "Let us make a dice roller — so fun! You will learn about random numbers, which are super important in every game ever made. Math dot random gives you a surprise number between zero and one. Multiplying by six gives a number from one to six. Your mission is to show a different emoji for each number rolled instead of plain text. Use one, two, three, four, five, and six emojis!",
+    hint: "Use an if statement to check the number. Like: if number equals 1, show a 1 emoji in the result. Then add more if statements for 2, 3, 4, 5, and 6. Each one shows a different emoji!",
+    check: c => c.includes('Math.random') && (c.includes('if') || c.includes('switch')) && (c.includes('1️⃣') || c.includes('emoji') || c.includes('one') || (c.match(/if.*===.*[1-6]/)))
+  },
+  {
+    id: 3, emoji: "⌨️", title: "Speed Typer", tag: "Events & Arrays", stars: 3, age: "11+",
+    starter: `<!DOCTYPE html>
+<html>
+<body style="background: #0d2137; text-align: center;
+             padding: 30px; font-family: Arial; color: white;">
+
+  <h1 style="font-size: 32px;">⌨️ Speed Typer!</h1>
+
+  <div id="word"
+       style="font-size: 52px; color: #4fc3f7;
+              margin: 20px; letter-spacing: 4px;">
+    CAT
+  </div>
+
+  <input id="typing" type="text"
+    placeholder="Type the word!"
+    style="font-size: 24px; padding: 10px; border-radius: 10px;
+           border: none; text-align: center; width: 240px;"
+    oninput="checkWord()" />
+
+  <div id="score"
+       style="font-size: 26px; margin-top: 20px; color: #69f0ae;">
+    Score: 0
+  </div>
+
+  <script>
+    let words = ['CAT', 'DOG', 'SUN', 'HAT', 'RUN'];
+    let score = 0;
+
+    function checkWord() {
+      let typed = document.getElementById('typing').value.toUpperCase();
+      let target = document.getElementById('word').innerText;
+
+      if (typed === target) {
+        score = score + 1;
+        document.getElementById('score').innerText = 'Score: ' + score;
+        document.getElementById('typing').value = '';
+
+        // BUG: This always shows the first word!
+        // Fix it to show a RANDOM word instead:
+        document.getElementById('word').innerText = words[0];
+      }
+    }
+  <\/script>
+
+</body>
+</html>`,
+    goal: "Fix the bug so a RANDOM new word appears each time, and add more words to the list!",
+    intro: "Time for a real game challenge! You are making a speed typing game. When you type the correct word, a new one should appear. But there is a bug! Do you see words at position zero? It always shows the first word only. You need to fix it to pick a random word every time. You already know Math dot random, and words dot length tells you how many words are in your list!",
+    hint: "To pick a random word, replace words at zero with: words at Math dot floor open Math dot random times words dot length close. This picks a random spot in your list every time. Also try adding more fun words to the array!",
+    check: c => c.includes('Math.random') && c.includes('words') && c.includes('length')
+  },
+  {
+    id: 4, emoji: "🐍", title: "Snake Game", tag: "Canvas & Loops", stars: 3, age: "11+",
+    starter: `<!DOCTYPE html>
+<html>
+<body style="background: #111; text-align: center;
+             padding: 20px; font-family: Arial; color: white;">
+
+  <h1 style="font-size: 28px;">🐍 Snake Game</h1>
+
+  <canvas id="c" width="300" height="300"
+    style="background: #1a2d1a; border: 3px solid #4caf50;
+           border-radius: 10px; display:block; margin: 10px auto;">
+  </canvas>
+
+  <p style="color: #aaa; margin-top: 8px;">
+    Click the game first, then use arrow keys!
+  </p>
+
+  <script>
+    const canvas = document.getElementById('c');
+    const ctx = canvas.getContext('2d');
+    const SIZE = 20;
+
+    let snake = [{x: 5, y: 5}];
+    let dir = {x: 1, y: 0};
+    let food = {x: 8, y: 8};
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'ArrowRight') dir = {x:1, y:0};
+      if (e.key === 'ArrowLeft')  dir = {x:-1, y:0};
+      if (e.key === 'ArrowDown')  dir = {x:0, y:1};
+      if (e.key === 'ArrowUp')    dir = {x:0, y:-1};
+    });
+
+    function draw() {
+      ctx.clearRect(0, 0, 300, 300);
+
+      // Draw food
+      ctx.fillStyle = 'red';
+      ctx.fillRect(food.x * SIZE, food.y * SIZE, SIZE-2, SIZE-2);
+
+      // Draw snake
+      ctx.fillStyle = 'lime';
+      snake.forEach(s => {
+        ctx.fillRect(s.x * SIZE, s.y * SIZE, SIZE-2, SIZE-2);
+      });
+
+      // Move snake
+      let head = {x: snake[0].x + dir.x, y: snake[0].y + dir.y};
+      snake.unshift(head);
+      snake.pop(); // TODO: Don't pop when eating food!
+    }
+
+    setInterval(draw, 150);
+  <\/script>
+
+</body>
+</html>`,
+    goal: "Make the snake grow when it eats the food, and move the food to a new random spot!",
+    intro: "This is the ultimate challenge — a real Snake game using Canvas! The snake already moves around, which is super cool. But it does not grow when it touches the red food square. Your mission is to check if the snake head lands on the food. If it does, skip removing the tail so the snake gets longer. Then move the food to a brand new random position on the grid. Think like a real game developer!",
+    hint: "Add an if statement inside the draw function. Check if head dot x equals food dot x AND head dot y equals food dot y. If yes, skip the snake dot pop and move the food to a new random spot using Math dot floor of Math dot random times 14 for both x and y!",
+    check: c => c.includes('Math.random') && c.includes('food') && c.includes('unshift') && c.includes('head')
+  }
+];
+
+let completed = new Set(), totalStars = 0, curM = null, chatHist = [];
+let voiceOn = true, isRecording = false, recog = null;
+let audioQueue = [], isSpeaking = false, puterReady = false;
+
+// ── VOICE (ElevenLabs via Puter.js) ──────────────────────────────
+const VOICE_ID = "21m00Tcm4TlvDq8ikWAM"; // Rachel — warm, clear
+
+function setStatus(msg) { const e = document.getElementById('vstatus'); if (e) e.textContent = msg; }
+function setSpeakDot(on) { const d = document.getElementById('sdot'); if (d) d.classList.toggle('on', on); }
+
+async function waitForPuter() {
+  return new Promise(resolve => {
+    if (typeof puter !== 'undefined' && puter.ai) { puterReady = true; resolve(); return; }
+    let tries = 0;
+    const t = setInterval(() => {
+      tries++;
+      if (typeof puter !== 'undefined' && puter.ai) { clearInterval(t); puterReady = true; resolve(); }
+      else if (tries > 50) { clearInterval(t); resolve(); }
+    }, 200);
+  });
+}
+
+async function speakText(text) {
+  if (!voiceOn) return;
+  const clean = text.replace(/<[^>]+>/g, ' ').replace(/`([^`]+)`/g, '$1').replace(/\*\*([^*]+)\*\*/g, '$1').replace(/\s+/g, ' ').trim();
+  if (!clean) return;
+  audioQueue.push(clean);
+  if (!isSpeaking) processQueue();
+}
+
+async function processQueue() {
+  if (isSpeaking || audioQueue.length === 0) return;
+  isSpeaking = true; setSpeakDot(true); setStatus('🔊 Cody speaking...');
+  const text = audioQueue.shift();
+  try {
+    if (puterReady) {
+      const audio = await puter.ai.txt2speech(text, { provider: 'elevenlabs', voice: VOICE_ID, model: 'eleven_turbo_v2_5' });
+      await new Promise(res => { audio.onended = res; audio.onerror = res; audio.play().catch(res); });
+    } else { fallbackSpeak(text); await new Promise(r => setTimeout(r, text.length * 60)); }
+  } catch (e) { fallbackSpeak(text); await new Promise(r => setTimeout(r, 2000)); }
+  isSpeaking = false; setSpeakDot(false); setStatus(puterReady ? '✓ Voice ready' : 'Browser voice');
+  if (audioQueue.length > 0) processQueue();
+}
+
+function fallbackSpeak(text) {
+  const u = new SpeechSynthesisUtterance(text);
+  u.rate = 0.88; u.pitch = 1.1;
+  const v = speechSynthesis.getVoices().find(x => /samantha|karen|female|victoria/i.test(x.name)) || speechSynthesis.getVoices().find(x => /en/i.test(x.lang));
+  if (v) u.voice = v;
+  speechSynthesis.speak(u);
+}
+
+function stopSpeaking() {
+  audioQueue = []; isSpeaking = false; setSpeakDot(false);
+  try { speechSynthesis.cancel(); } catch (e) {}
+}
+
+function toggleVoice() {
+  voiceOn = !voiceOn;
+  const btn = document.getElementById('vtog');
+  btn.textContent = voiceOn ? '🔊 Voice ON' : '🔇 Voice OFF';
+  btn.classList.toggle('muted', !voiceOn);
+  if (!voiceOn) stopSpeaking();
+}
+
+// ── MIC (Web Speech API) ─────────────────────────────────────────
+function initRecog() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) return;
+  recog = new SR(); recog.lang = 'en-US'; recog.interimResults = false;
+  recog.onresult = e => { document.getElementById('ci').value = e.results[0][0].transcript; sendChat(); };
+  recog.onend = () => { isRecording = false; document.getElementById('bmic').classList.remove('rec'); };
+  recog.onerror = () => { isRecording = false; document.getElementById('bmic').classList.remove('rec'); };
+}
+
+function toggleMic() {
+  if (!recog) initRecog();
+  if (!recog) { addBub('cl', 'Voice input is not supported in this browser. Try typing instead!'); return; }
+  if (isRecording) { recog.stop(); return; }
+  stopSpeaking(); isRecording = true;
+  document.getElementById('bmic').classList.add('rec');
+  recog.start();
+}
+
+// ── HOME SCREEN ──────────────────────────────────────────────────
+function renderHome() {
+  const g = document.getElementById('mg'); g.innerHTML = '';
+  MISSIONS.forEach((m, i) => {
+    const c = document.createElement('div');
+    c.className = 'mcard' + (completed.has(m.id) ? ' done' : '') + (m.locked ? ' locked' : '');
+    c.innerHTML = `
+      ${completed.has(m.id) ? '<span class="dbadge">✓ Done!</span>' : ''}
+      <div class="mcard-icon">${m.emoji}</div>
+      <div class="mcard-title">${m.title}</div>
+      <div class="mcard-tag">${m.tag}</div>
+      <div class="mcard-stars">${'⭐'.repeat(m.stars)}</div>
+      <div class="mcard-age">Age ${m.age}</div>
+    `;
+    if (!m.locked) c.onclick = () => startMission(i);
+    g.appendChild(c);
+  });
+}
+
+// ── GAME LOGIC ───────────────────────────────────────────────────
+function startMission(idx) {
+  curM = MISSIONS[idx];
+  document.getElementById('hs').style.display = 'none';
+  document.getElementById('gs').style.display = 'flex';
+  document.getElementById('gemi').textContent = curM.emoji;
+  document.getElementById('gtit').textContent = curM.title;
+  document.getElementById('gdesc').textContent = curM.goal;
+  document.getElementById('ed').value = curM.starter;
+  document.getElementById('msgs').innerHTML = '';
+  chatHist = [];
+  runCode();
+  stopSpeaking();
+  setTimeout(() => { addBub('cl', curM.intro); speakText(curM.intro); }, 300);
+}
+
+function goHome() {
+  stopSpeaking();
+  document.getElementById('gs').style.display = 'none';
+  document.getElementById('hs').style.display = 'flex';
+  renderHome();
+}
+
+function runCode() { document.getElementById('pf').srcdoc = document.getElementById('ed').value; }
+
+function checkCode() {
+  const c = document.getElementById('ed').value;
+  if (curM.check(c)) {
+    completed.add(curM.id); totalStars += curM.stars;
+    document.getElementById('sc').textContent = totalStars;
+    const msg = `You completed ${curM.title} and earned ${curM.stars} stars! Total: ${totalStars} stars!`;
+    document.getElementById('celmsg').textContent = msg;
+    document.getElementById('cel').classList.add('show');
+    stopSpeaking();
+    setTimeout(() => speakText(`Wow! Amazing work! You are a real game developer! ${msg}`), 200);
+  } else {
+    const h = "Not quite yet! Here is a hint: " + curM.hint + " You can do it — ask me if you need more help!";
+    addBub('cl', h); speakText(h);
+  }
+}
+
+function nextMission() { closeCel(); const n = curM.id + 1; if (n < MISSIONS.length) startMission(n); else goHome(); }
+function closeCel() { document.getElementById('cel').classList.remove('show'); stopSpeaking(); }
+function showHint() { const h = "Here is your hint! " + curM.hint; addBub('cl', h); speakText(h); }
+
+function addBub(type, html) {
+  const m = document.getElementById('msgs');
+  const b = document.createElement('div'); b.className = 'bub ' + type;
+  b.innerHTML = html.replace(/`([^`]+)`/g, '<code>$1</code>').replace(/\n/g, '<br>');
+  m.appendChild(b); m.scrollTop = m.scrollHeight; return b;
+}
+
+// ── YOUR API KEY ─────────────────────────────────────────────────
+// Paste your Anthropic API key below between the quotes.
+// Get one free at: https://console.anthropic.com
+const ANTHROPIC_API_KEY = "YOUR_API_KEY_HERE";
+
+// ── CODY CHAT (Claude Haiku — ultra low cost) ─────────────────────
+async function sendChat() {
+  const inp = document.getElementById('ci');
+  const txt = inp.value.trim(); if (!txt) return;
+
+  if (!ANTHROPIC_API_KEY || ANTHROPIC_API_KEY === "YOUR_API_KEY_HERE") {
+    addBub('cl', "Oops! To chat with Cody, open this HTML file in a text editor and paste your Anthropic API key where it says YOUR_API_KEY_HERE. Get one free at console.anthropic.com!");
+    speakText("To use Cody, you need to add your API key to the file first. Ask a grown-up to help!");
+    return;
+  }
+
+  inp.value = ''; stopSpeaking();
+  addBub('us', txt);
+  const tb = addBub('tk', 'Cody is thinking...');
+  chatHist.push({ role: 'user', content: txt });
+  const code = document.getElementById('ed').value;
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': ANTHROPIC_API_KEY,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 200,
+        system: `You are Cody, a super friendly and encouraging AI coding buddy for kids aged 8-11 learning to make video games with HTML and JavaScript.
+
+Current mission: "${curM?.title}" — Goal: "${curM?.goal}"
+
+Kid's current code:
+\`\`\`html
+${code}
+\`\`\`
+
+IMPORTANT — your replies are read aloud by a natural human voice to a child. So:
+- Write as if you are TALKING warmly to a child, NOT writing text
+- Never use markdown symbols like asterisks, backticks, or hashtags — they sound weird out loud
+- Keep answers SHORT — 2 to 3 sentences max. Short is better for listening!
+- Use phrases like: You are SO close!, Great thinking!, That is awesome!, Nice try!
+- Never give the full answer — give one small nudge and ask one friendly question
+- Be excited and fun, like a cool older sibling helping out`,
+        messages: chatHist
+      })
+    });
+    const data = await res.json();
+    const reply = data.content?.map(c => c.text).join('') || "Hmm, I could not connect. Try asking me again!";
+    chatHist.push({ role: 'assistant', content: reply });
+    tb.className = 'bub cl'; tb.innerHTML = reply.replace(/\n/g, '<br>');
+    speakText(reply);
+  } catch (e) {
+    const err = "Oops, I had a little trouble connecting. Try asking me again!";
+    tb.className = 'bub cl'; tb.innerHTML = err; speakText(err);
+  }
+}
+
+// ── INIT ─────────────────────────────────────────────────────────
+(async () => {
+  setStatus('Loading voice...');
+  await waitForPuter();
+  setStatus(puterReady ? '✓ Voice ready' : 'Browser voice');
+  renderHome();
+  if (puterReady) {
+    setTimeout(() => speakText("Welcome to Game Dev Academy! Pick a mission and start building your very own video game!"), 800);
+  }
+})();
+</script>
+</body>
+</html>
